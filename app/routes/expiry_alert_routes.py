@@ -7,6 +7,8 @@ from app.routes.pantry_routes import _store as pantry_store
 
 bp = Blueprint("expiry_alerts", __name__, url_prefix="/expiry-alerts")
 
+MAX_WARNING_DAYS = 365
+
 
 @bp.get("/")
 def get_expiry_alerts():
@@ -18,6 +20,8 @@ def get_expiry_alerts():
         warning_days = int(request.args.get("warning_days", 7))
         if warning_days < 0:
             return jsonify({"error": "warning_days must be non-negative"}), 400
+        if warning_days > MAX_WARNING_DAYS:
+            return jsonify({"error": f"warning_days must not exceed {MAX_WARNING_DAYS}"}), 400
     except ValueError:
         return jsonify({"error": "warning_days must be an integer"}), 400
 
